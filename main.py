@@ -7,7 +7,7 @@ from src.file_handler import load_data
 x_train, y_train, x_valid, y_valid = load_data()
 
 model = Sequential()
-model.add(Dense(8, activation='sigmoid', input_shape=(8,)))
+model.add(Dense(8, activation='sigmoid', input_shape=(7,)))
 model.add(Dense(32, activation='sigmoid'))
 model.add(Dense(32, activation='sigmoid'))
 model.add(Dense(1, activation='sigmoid'))

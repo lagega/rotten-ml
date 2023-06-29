@@ -8,7 +8,6 @@ FEEDING_COLUMNS = [
     'directors',
     'authors',
     'actors',
-    'runtime',
     'production_company'
 ]
 
@@ -19,22 +18,20 @@ VALIDATION_SIZE = 17712 - TRAINING_SIZE
 
 
 def load_data():
-    df = pandas.read_csv('../assets/rotten_movies.csv')
+    df = pandas.read_csv('C:/Users/Gabriel/PycharmProjects/rotten_model/assets/rotten_movies.csv')
 
     training_df = df.head(TRAINING_SIZE).sample(TRAINING_SIZE)
     validation_df = df.tail(VALIDATION_SIZE).sample(VALIDATION_SIZE)
 
-    x_train = training_df[FEEDING_COLUMNS]
-    x_train['runtime'] = x_train['runtime'].to_numpy(int)
+    x_train = training_df[FEEDING_COLUMNS].to_numpy(str)
 
     y_train = training_df[RESULT_COLUMN].to_numpy()
 
-    x_valid = validation_df[FEEDING_COLUMNS]
-    x_valid['runtime'] = x_valid['runtime'].to_numpy(int)
+    x_valid = validation_df[FEEDING_COLUMNS].to_numpy(str)
 
     y_valid = validation_df[RESULT_COLUMN].to_numpy()
 
-    return x_train.to_numpy(str), normalize_y(y_train), x_valid.to_numpy(str), normalize_y(y_valid)
+    return x_train, normalize_y(y_train), x_valid, normalize_y(y_valid)
 
 
 def normalize_y(values):
