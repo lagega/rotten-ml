@@ -1,18 +1,14 @@
-from keras import Sequential
-from keras.layers import Dense
-from keras.optimizers import SGD
+import tensorflow as tf
 
 from src.file_handler import load_data
+from src.model import shallow_relu_adam, deep_relu_adam
 
-x_train, y_train, x_valid, y_valid = load_data()
+x_train, x_valid, y_train, y_valid = load_data()
 
-model = Sequential()
-model.add(Dense(8, activation='sigmoid', input_shape=(7,)))
-model.add(Dense(32, activation='sigmoid'))
-model.add(Dense(32, activation='sigmoid'))
-model.add(Dense(1, activation='sigmoid'))
+train_data = tf.data.Dataset.from_tensor_slices((x_train, y_train)).batch(16)
+valid_data = tf.data.Dataset.from_tensor_slices((x_valid, y_valid)).batch(16)
 
-model.compile(loss='mean_squared_error', optimizer=SGD(lr=0.01), metrics=['accuracy'])
+model = deep_relu_adam()
 
-model.fit(x_train, y_train, batch_size=128, epochs=200, verbose=1, validation_data=(x_valid, y_valid))
+model.fit(train_data, batch_size=16, epochs=20, verbose=1, validation_data=valid_data)
 

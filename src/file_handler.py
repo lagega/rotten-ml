@@ -1,5 +1,8 @@
 import numpy as np
 import pandas
+from sklearn.model_selection import train_test_split
+
+from src.vectorizer import get_count_vector
 
 FEEDING_COLUMNS = [
     'movie_title',
@@ -13,25 +16,30 @@ FEEDING_COLUMNS = [
 
 RESULT_COLUMN = 'tomatometer_rating'
 
-TRAINING_SIZE = 14000
-VALIDATION_SIZE = 17712 - TRAINING_SIZE
-
 
 def load_data():
-    df = pandas.read_csv('C:/Users/Gabriel/PycharmProjects/rotten_model/assets/rotten_movies.csv')
+    df = pandas.read_csv('C:/Users/Gabriel/PycharmProjects/rotten_model/assets/rotten_movies.csv',
+                         converters={col: trim for col in FEEDING_COLUMNS})
 
-    training_df = df.head(TRAINING_SIZE).sample(TRAINING_SIZE)
-    validation_df = df.tail(VALIDATION_SIZE).sample(VALIDATION_SIZE)
+    df[RESULT_COLUMN] = df[RESULT_COLUMN].fillna(0)
+    df = df.fillna('')
+    df['text'] = to_single_string(df)
 
-    x_train = training_df[FEEDING_COLUMNS].to_numpy(str)
+    vectorized_x = get_count_vector(df['text'])
+    vectorized_y = normalize_y(df[RESULT_COLUMN])
 
-    y_train = training_df[RESULT_COLUMN].to_numpy()
+    return train_test_split(vectorized_x, vectorized_y, train_size=0.2, random_state=42, shuffle=True)
 
-    x_valid = validation_df[FEEDING_COLUMNS].to_numpy(str)
 
-    y_valid = validation_df[RESULT_COLUMN].to_numpy()
+def trim(string):
+    return string[0:100]
 
-    return x_train, normalize_y(y_train), x_valid, normalize_y(y_valid)
+
+def to_single_string(df):
+    a = ''
+    for column in FEEDING_COLUMNS:
+        a += df[column] + ' '
+    return a
 
 
 def normalize_y(values):
